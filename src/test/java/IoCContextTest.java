@@ -1,6 +1,5 @@
 import com.example.IoCContextImpl;
-import com.example.interfaceClass.MyBeanBase;
-import com.example.interfaceClass.MyBeanImpl;
+import com.example.interfaceClass.*;
 import com.example.otherClass.MyBean;
 import com.example.otherClass.*;
 import org.junit.jupiter.api.Test;
@@ -98,14 +97,23 @@ class IoCContextTest {
     }
 
     @Test
-    void should_can_work_when_register_myBaseBean_baseBean() throws Exception {
+    void should_can_work_when_register_interface() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBeanBase.class, MyBeanImpl.class);
 
         MyBeanBase bean = context.getBean(MyBeanBase.class);
 
-        assertEquals("interface bean can work", bean.getString());
+        assertEquals("implement class bean can work", bean.getString());
     }
 
+    @Test
+    void should_can_work_when_register_superClass() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBaseClass.class, MyBeanImpl.class);
 
+        MyBeanBaseClass bean = context.getBean(MyBeanBaseClass.class);
+
+        assertEquals("getSuperClass", bean.getSuperClass());
+    }
+    
 }

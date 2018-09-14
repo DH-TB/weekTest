@@ -30,6 +30,9 @@ public class IoCContextImpl implements IoCContext{
 
     @Override
     public <T> T getBean(Class<T> resolveClazz) {
+        if(resolveClazz == null){
+            throw new IllegalArgumentException();
+        }
         return null;
     }
 

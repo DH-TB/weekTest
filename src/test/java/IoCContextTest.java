@@ -1,9 +1,6 @@
 import com.example.IoCContextImpl;
 import com.example.MyBean;
-import com.example.otherClass.ClassCanWork;
-import com.example.otherClass.ClassConstructorThrowException;
-import com.example.otherClass.ClassNotHaveDefaultConstructor;
-import com.example.otherClass.ClassNotInstanctiated;
+import com.example.otherClass.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,4 +93,18 @@ class IoCContextTest {
 
         assertEquals("can work", actual);
     }
+
+    @Test
+    void should_can_work_when_register_arbitrarily_bean() throws InstantiationException, IllegalAccessException {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(ClassCanWork.class);
+        context.registerBean(ClassCanWorkAnother.class);
+
+        ClassCanWorkAnother bean = context.getBean(ClassCanWorkAnother.class);
+
+        String actual = bean.getString();
+
+        assertEquals("can work", actual);
+    }
+
 }

@@ -80,7 +80,20 @@ class IoCContextTest {
 
         ClassCanWork bean = context.getBean(ClassCanWork.class);
         ClassCanWork anotherBean = context.getBean(ClassCanWork.class);
-        
+
         assertNotSame(bean, anotherBean);
+    }
+
+    @Test
+    void should_can_get_one_work_bean_when_register_repeat_same_bean() throws InstantiationException, IllegalAccessException {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(ClassCanWork.class);
+        context.registerBean(ClassCanWork.class);
+
+        ClassCanWork bean = context.getBean(ClassCanWork.class);
+
+        String actual = bean.getString();
+
+        assertEquals("can work", actual);
     }
 }

@@ -2,40 +2,47 @@ package com.example;
 
 import java.util.*;
 
-public class IoCContextImpl implements IoCContext{
+public class IoCContextImpl implements IoCContext {
 
-    private Set<Class> classList = new HashSet<>();
+    private List<Class> classList = new ArrayList<>();
 
     @Override
     public void registerBean(Class<?> beanClazz) throws IllegalAccessException, InstantiationException {
-        if(beanClazz == null){
+        if (beanClazz == null) {
             throw new IllegalArgumentException("beanClazz is mandatory");
         }
 
         long count = Arrays.stream(beanClazz.getConstructors()).filter(constructor -> constructor.getParameterCount() == 0).count();
-        if(count == 0){
+        if (count == 0) {
             throw new IllegalArgumentException("$bean ClassNotHaveDefaultConstructor has no default constructor");
         }
 
         try {
             beanClazz.newInstance();
-        }catch (InstantiationException | IllegalAccessException e){
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("$bean ClassNotInstance is abstract");
         }
 
-        if(!classList.add(beanClazz)){
-            return;
+        if(!classList.contains(beanClazz)){
+            classList.add(beanClazz);
         }
     }
 
     @Override
-    public <T> T getBean(Class<T> resolveClazz) {
-        if(resolveClazz == null){
+    public <T> T getBean(Class<T> resolveClazz)  {
+        if (resolveClazz == null) {
             throw new IllegalArgumentException();
         }
-        if(!classList.contains(resolveClazz)){
+        if (!classList.contains(resolveClazz)) {
             throw new IllegalStateException();
         }
+
+        try {
+            resolveClazz.getConstructors();
+        }catch (Exception e){
+            throw e;
+        }
+
         return null;
     }
 

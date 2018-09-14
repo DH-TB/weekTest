@@ -28,12 +28,6 @@ class IoCContextTest {
     }
 
     @Test
-    void should_return_when_beanClazz_is_registered() throws InstantiationException, IllegalAccessException {
-        IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(MyBean.class);
-    }
-
-    @Test
     void should_throw_exception_when_resolveClazz_is_null(){
         IoCContextImpl context = new IoCContextImpl();
         assertThrows(IllegalArgumentException.class, () -> context.getBean(null));

@@ -6,9 +6,7 @@ import com.example.otherClass.ClassNotHaveDefaultConstructor;
 import com.example.otherClass.ClassNotInstanctiated;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IoCContextTest {
     @Test
@@ -73,5 +71,16 @@ class IoCContextTest {
         String actual = bean.getString();
 
         assertEquals("can work", actual);
+    }
+
+    @Test
+    void should_can_get_not_same_bean_when_register_one_bean() throws InstantiationException, IllegalAccessException {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(ClassCanWork.class);
+
+        ClassCanWork bean = context.getBean(ClassCanWork.class);
+        ClassCanWork anotherBean = context.getBean(ClassCanWork.class);
+        
+        assertNotSame(bean, anotherBean);
     }
 }

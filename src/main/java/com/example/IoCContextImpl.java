@@ -2,6 +2,7 @@ package com.example;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class IoCContextImpl implements IoCContext{
@@ -15,8 +16,8 @@ public class IoCContextImpl implements IoCContext{
         }
 
 
-        Constructor<?>[] constructors = beanClazz.getConstructors();
-        if(constructors.length == 0){
+        long count = Arrays.stream(beanClazz.getConstructors()).filter(constructor -> constructor.getParameterCount() == 0).count();
+        if(count == 0){
             throw new IllegalArgumentException("$bean full name$ has no default constructor");
         }
 

@@ -126,4 +126,26 @@ class IoCContextTest {
 
         assertEquals("another bean can work", bean.getString());
     }
+
+    @Test
+    void should_can_get_not_same_bean_when_register_interface() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBase.class, MyBeanImpl.class);
+
+        MyBeanBase bean = context.getBean(MyBeanBase.class);
+        MyBeanBase beanAnother = context.getBean(MyBeanBase.class);
+
+        assertNotSame(bean, beanAnother);
+    }
+
+    @Test
+    void should_can_get_not_same_bean_when_register_superClass() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBaseClass.class, MyBeanImpl.class);
+
+        MyBeanBaseClass bean = context.getBean(MyBeanBaseClass.class);
+        MyBeanBaseClass beanAnother = context.getBean(MyBeanBaseClass.class);
+
+        assertNotSame(bean, beanAnother);
+    }
 }

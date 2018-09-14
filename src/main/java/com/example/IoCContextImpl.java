@@ -1,13 +1,15 @@
 package com.example;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class IoCContextImpl implements IoCContext {
-
-    private List<Class> classList = new ArrayList<>();
+    private boolean flag;
+    private final List<Class> classList = new ArrayList<>();
 
     @Override
-    public void registerBean(Class<?> beanClazz) throws IllegalAccessException, InstantiationException {
+    public void registerBean(Class<?> beanClazz) {
         if (beanClazz == null) {
             throw new IllegalArgumentException("beanClazz is mandatory");
         }
@@ -23,13 +25,19 @@ public class IoCContextImpl implements IoCContext {
             throw new IllegalArgumentException("$bean ClassNotInstance is abstract");
         }
 
+        if(flag){
+            throw new IllegalStateException();
+        }
+
         if(!classList.contains(beanClazz)){
             classList.add(beanClazz);
         }
     }
 
     @Override
-    public <T> T getBean(Class<T> resolveClazz)  {
+    public <T> T getBean(Class<T> resolveClazz) throws IllegalAccessException, InstantiationException {
+        flag = true;
+
         if (resolveClazz == null) {
             throw new IllegalArgumentException();
         }
@@ -38,10 +46,11 @@ public class IoCContextImpl implements IoCContext {
         }
 
         try {
-            resolveClazz.getConstructors();
-        }catch (Exception e){
+            resolveClazz.newInstance();
+        }catch (IllegalAccessException | InstantiationException e){
             throw e;
         }
+
 
         return null;
     }

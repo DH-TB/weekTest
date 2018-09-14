@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class IoCContextImpl implements IoCContext {
-    private boolean flag;
+    private boolean isGetBean;
     private final List<Class> classList = new ArrayList<>();
 
     @Override
@@ -22,21 +22,21 @@ public class IoCContextImpl implements IoCContext {
         try {
             beanClazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("$bean ClassNotInstance is abstract");
+            throw new IllegalArgumentException("$bean ClassNotInstanctiated is abstract");
         }
 
-        if(flag){
+        if (isGetBean) {
             throw new IllegalStateException();
         }
 
-        if(!classList.contains(beanClazz)){
+        if (!classList.contains(beanClazz)) {
             classList.add(beanClazz);
         }
     }
 
     @Override
     public <T> T getBean(Class<T> resolveClazz) throws IllegalAccessException, InstantiationException {
-        flag = true;
+        isGetBean = true;
 
         if (resolveClazz == null) {
             throw new IllegalArgumentException();
@@ -47,12 +47,11 @@ public class IoCContextImpl implements IoCContext {
 
         try {
             resolveClazz.newInstance();
-        }catch (IllegalAccessException | InstantiationException e){
+        } catch (IllegalStateException | IllegalAccessException | InstantiationException e) {
             throw e;
         }
 
-
-        return null;
+        return resolveClazz.newInstance();
     }
 
     public void getMyBean() throws InstantiationException, IllegalAccessException {

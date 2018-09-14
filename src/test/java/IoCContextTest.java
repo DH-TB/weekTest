@@ -1,11 +1,13 @@
 import com.example.IoCContextImpl;
 import com.example.MyBean;
+import com.example.otherClass.ClassCanWork;
 import com.example.otherClass.ClassConstructorThrowException;
 import com.example.otherClass.ClassNotHaveDefaultConstructor;
-import com.example.otherClass.ClassNotInstance;
+import com.example.otherClass.ClassNotInstanctiated;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class IoCContextTest {
@@ -24,13 +26,13 @@ class IoCContextTest {
     }
 
     @Test
-    void should_throw_exception_when_beanClass_not_instance() {
+    void should_throw_exception_when_beanClass_can_not_instantiated() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstance.class));
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class));
     }
 
     @Test
-    void should_return_when_beanClazz_is_registered() throws InstantiationException, IllegalAccessException {
+    void should_return_when_beanClazz_is_registered() {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBean.class);
         assertDoesNotThrow(() -> context.registerBean(MyBean.class));
@@ -60,5 +62,16 @@ class IoCContextTest {
         context.registerBean(MyBean.class);
         context.getBean(MyBean.class);
         assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class));
+    }
+
+    @Test
+    void should_can_work_when_register_good_bean() throws InstantiationException, IllegalAccessException {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(ClassCanWork.class);
+
+        ClassCanWork bean = context.getBean(ClassCanWork.class);
+        String actual = bean.getString();
+
+        assertEquals("can work", actual);
     }
 }

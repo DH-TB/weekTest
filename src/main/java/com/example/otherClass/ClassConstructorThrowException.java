@@ -1,7 +1,7 @@
 package com.example.otherClass;
 
 public class ClassConstructorThrowException {
-    public ClassConstructorThrowException() {
-        throw new IllegalStateException();
+    public ClassConstructorThrowException() throws Exception {
+        throw new Exception("Something happened");
     }
 }

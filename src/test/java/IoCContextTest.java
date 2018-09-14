@@ -1,4 +1,5 @@
 import com.example.IoCContextImpl;
+import com.example.MyBean;
 import com.example.otherClass.ClassNotHaveDefaultConstructor;
 import com.example.otherClass.ClassNotInstance;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,12 @@ class IoCContextTest {
     void should_throw_exception_when_beanClass_not_instance(){
         IoCContextImpl context = new IoCContextImpl();
         assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstance.class));
+    }
+
+    @Test
+    void should_return_when_beanClazz_is_registered() throws InstantiationException, IllegalAccessException {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBean.class);
     }
 
 }

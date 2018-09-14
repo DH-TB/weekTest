@@ -1,13 +1,10 @@
 package com.example;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class IoCContextImpl implements IoCContext{
 
-    private List<Class> beanList = new ArrayList<>();
+    private Set<Class> beanList = new HashSet<>();
 
     @Override
     public void registerBean(Class<?> beanClazz) throws IllegalAccessException, InstantiationException {
@@ -26,7 +23,9 @@ public class IoCContextImpl implements IoCContext{
             throw new IllegalArgumentException("$bean ClassNotInstance is abstract");
         }
 
-        beanList.add(beanClazz);
+        if(!beanList.add(beanClazz)){
+            return;
+        }
     }
 
     @Override

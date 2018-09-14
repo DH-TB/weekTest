@@ -2,13 +2,12 @@ package com.example;
 
 import com.example.otherClass.MyBean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class IoCContextImpl implements IoCContext {
     private boolean isGetBean;
     private final List<Class> classList = new ArrayList<>();
+    private final Map<Class, Class> map = new HashMap<>();
 
     @Override
     public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz) throws Exception {
@@ -22,13 +21,23 @@ public class IoCContextImpl implements IoCContext {
 
         judgeIllegalGetBean();
 
-        if (!classList.contains(beanClazz)) {
-            classList.add(beanClazz);
+//        if (!classList.contains(beanClazz)) {
+//            classList.add(beanClazz);
+//        }
+
+        if (map.containsKey(resolveClazz)) {
+            Class aClass = map.get(resolveClazz);
+            if (!aClass.equals(beanClazz)) {
+                map.put(resolveClazz, beanClazz);
+            }
+        } else {
+            map.put(resolveClazz, beanClazz);
         }
+
     }
 
     @Override
-    public <T> T getBean(Class<T> resolveClazz) throws Exception {
+    public <T> T getBean(Class<T> resolveClazz) throws IllegalAccessException, InstantiationException {
         isGetBean = true;
 
         if (resolveClazz == null) {
@@ -37,13 +46,11 @@ public class IoCContextImpl implements IoCContext {
 
         judgeBeanNotRegistered(resolveClazz);
 
-        T instance = resolveClazz.newInstance();
-
-        return instance;
+        return (T) map.get(resolveClazz).newInstance();
     }
 
     private <T> void judgeBeanNotRegistered(Class<T> resolveClazz) {
-        if (!classList.contains(resolveClazz)) {
+        if (!map.containsKey(resolveClazz)) {
             throw new IllegalStateException("resolveClazz not registered");
         }
     }
@@ -73,11 +80,5 @@ public class IoCContextImpl implements IoCContext {
         if (count == 0) {
             throw new IllegalArgumentException("ClassNotHaveDefaultConstructor has no default constructor");
         }
-    }
-
-    public void getMyBean() throws Exception {
-        IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(null, MyBean.class);
-        MyBean myBeanInstance = context.getBean(MyBean.class);
     }
 }

@@ -2,7 +2,7 @@ package com.example;
 
 public interface IoCContext {
 
-    void registerBean(Class<?> beanClazz) throws IllegalAccessException, InstantiationException;
+    void registerBean(Class<?> beanClazz) throws Exception;
 
-    <T> T getBean(Class<T> resolveClazz) throws InstantiationException, IllegalAccessException;
+    <T> T getBean(Class<T> resolveClazz) throws Exception;
 }

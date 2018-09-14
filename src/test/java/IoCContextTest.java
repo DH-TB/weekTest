@@ -38,4 +38,10 @@ class IoCContextTest {
         IoCContextImpl context = new IoCContextImpl();
         assertThrows(IllegalArgumentException.class, () -> context.getBean(null));
     }
+
+    @Test
+    void should_throw_exception_when_resolveClass_not_register(){
+        IoCContextImpl context = new IoCContextImpl();
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyBean.class));
+    }
 }

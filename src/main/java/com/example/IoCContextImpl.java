@@ -4,7 +4,7 @@ import java.util.*;
 
 public class IoCContextImpl implements IoCContext{
 
-    private Set<Class> beanList = new HashSet<>();
+    private Set<Class> classList = new HashSet<>();
 
     @Override
     public void registerBean(Class<?> beanClazz) throws IllegalAccessException, InstantiationException {
@@ -23,7 +23,7 @@ public class IoCContextImpl implements IoCContext{
             throw new IllegalArgumentException("$bean ClassNotInstance is abstract");
         }
 
-        if(!beanList.add(beanClazz)){
+        if(!classList.add(beanClazz)){
             return;
         }
     }
@@ -32,6 +32,9 @@ public class IoCContextImpl implements IoCContext{
     public <T> T getBean(Class<T> resolveClazz) {
         if(resolveClazz == null){
             throw new IllegalArgumentException();
+        }
+        if(!classList.contains(resolveClazz)){
+            throw new IllegalStateException();
         }
         return null;
     }

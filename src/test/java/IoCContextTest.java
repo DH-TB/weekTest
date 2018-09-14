@@ -115,5 +115,15 @@ class IoCContextTest {
 
         assertEquals("getSuperClass", bean.getSuperClass());
     }
-    
+
+    @Test
+    void should_override_when_register_repeat_same_resolveClazz() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBase.class, MyBeanImpl.class);
+        context.registerBean(MyBeanBase.class, MyBeanImplAnother.class);
+
+        MyBeanBase bean = context.getBean(MyBeanBase.class);
+
+        assertEquals("another bean can work", bean.getString());
+    }
 }

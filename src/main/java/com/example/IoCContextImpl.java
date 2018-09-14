@@ -18,21 +18,21 @@ public class IoCContextImpl implements IoCContext {
 
         long count = Arrays.stream(beanClazz.getConstructors()).filter(constructor -> constructor.getParameterCount() == 0).count();
         if (count == 0) {
-            throw new IllegalArgumentException("$bean ClassNotHaveDefaultConstructor has no default constructor");
+            throw new IllegalArgumentException("ClassNotHaveDefaultConstructor has no default constructor");
         }
 
         try {
             beanClazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("$bean ClassNotInstanctiated is abstract");
+            throw new IllegalArgumentException("ClassNotInstanctiated is abstract");
         } catch (Exception e) {
             if (e.getCause() != null) {
-                throw new Exception(e.getCause());
+                throw new Exception(e.getMessage(), e.getCause());
             }
         }
 
         if (isGetBean) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("not register bean after get bean");
         }
 
         if (!classList.contains(beanClazz)) {
@@ -45,10 +45,10 @@ public class IoCContextImpl implements IoCContext {
         isGetBean = true;
 
         if (resolveClazz == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("resolveClazz is null");
         }
         if (!classList.contains(resolveClazz)) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("resolveClazz not registered");
         }
         T instance = resolveClazz.newInstance();
 

@@ -10,20 +10,20 @@ class IoCContextTest {
     void should_throw_exception_when_beanClazz_is_null() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null));
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null), "beanClazz is mandatory");
     }
 
     @Test
     void should_throw_exception_when_beanClazz_not_have_default_constructor() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class));
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
     }
 
     @Test
     void should_throw_exception_when_beanClass_can_not_instantiated() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class));
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class), "ClassNotInstanctiated is abstract");
     }
 
     @Test
@@ -36,20 +36,20 @@ class IoCContextTest {
     @Test
     void should_throw_exception_when_resolveClazz_is_null() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalArgumentException.class, () -> context.getBean(null));
+        assertThrows(IllegalArgumentException.class, () -> context.getBean(null), "resolveClazz is null");
     }
 
     @Test
     void should_throw_exception_when_resolveClass_not_register() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalStateException.class, () -> context.getBean(MyBean.class));
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyBean.class), "resolveClazz not registered");
     }
 
     @Test
     void should_continue_throw_exception_when_getBean_getConstructors_throw_exception() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(ClassConstructorThrowException.class);
-        assertThrows(CloneNotSupportedException.class, () -> context.getBean(ClassConstructorThrowException.class));
+        assertThrows(CloneNotSupportedException.class, () -> context.getBean(ClassConstructorThrowException.class), "something happened");
     }
 
     @Test
@@ -57,7 +57,7 @@ class IoCContextTest {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBean.class);
         context.getBean(MyBean.class);
-        assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class));
+        assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class), "not register bean after get bean");
     }
 
     @Test

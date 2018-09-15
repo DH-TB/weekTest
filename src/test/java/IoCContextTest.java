@@ -158,4 +158,14 @@ class IoCContextTest {
 
         assertEquals("bean can work", bean.getString());
     }
+
+    @Test
+    void should_sub_class_can_get_bean_when_register_super_class() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBaseClass.class, MyBeanImpl.class);
+
+        MyBeanImpl bean = context.getBean(MyBeanImpl.class);
+
+        assertEquals("bean can work", bean.getString());
+    }
 }

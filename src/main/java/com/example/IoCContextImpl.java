@@ -8,8 +8,8 @@ public class IoCContextImpl implements IoCContext {
 
     @Override
     public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz) throws Exception {
-        if (beanClazz == null) {
-            throw new IllegalArgumentException("beanClazz is mandatory");
+        if (beanClazz == null || resolveClazz == null) {
+            throw new IllegalArgumentException("beanClazz or resolveClazz is mandatory");
         }
 
         judgeNoDefaultConstructor(beanClazz);

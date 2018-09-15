@@ -3,10 +3,12 @@ import com.example.interfaceClass.MyBeanBase;
 import com.example.interfaceClass.MyBeanBaseClass;
 import com.example.interfaceClass.MyBeanImpl;
 import com.example.interfaceClass.MyBeanImplAnother;
+import com.example.otherClass.MyBean;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SuperClassAndInterfaceTest {
     @Test
@@ -82,5 +84,24 @@ public class SuperClassAndInterfaceTest {
         assertEquals("bean can work", bean.getString());
     }
 
+    @Test
+    void should_throw_exception_when_beanClazz_is_null() {
+        IoCContextImpl context = new IoCContextImpl();
 
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(MyBean.class,null), "beanClazz or resolveClazz is mandatory");
+    }
+
+    @Test
+    void should_throw_exception_when_resolveClazz_is_null() {
+        IoCContextImpl context = new IoCContextImpl();
+
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null,MyBean.class), "beanClazz or resolveClazz is mandatory");
+    }
+    
+    @Test
+    void should_throw_exception_when_both_of_null() {
+        IoCContextImpl context = new IoCContextImpl();
+
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null,null), "beanClazz or resolveClazz is mandatory");
+    }
 }

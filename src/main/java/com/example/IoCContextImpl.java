@@ -1,6 +1,7 @@
 package com.example;
 
 import com.example.dependency.CreateOnTheFly;
+import com.example.dependency.MyDependency;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -59,34 +60,30 @@ public class IoCContextImpl implements IoCContext {
         }
 
         judgeBeanNotRegistered(resolveClazz);
-
-        judgeDependenceBean(resolveClazz);
-
+        T instance;
         if(map.get(resolveClazz) != null){
-            return (T) map.get(resolveClazz).newInstance();
+            instance = (T) map.get(resolveClazz).newInstance();
         }
         else {
-            return resolveClazz.newInstance();
+            instance = resolveClazz.newInstance();
         }
+
+        judgeDependenceBean(resolveClazz, instance);
+
+        return instance;
     }
-    <T> void judgeDependenceBean(Class<T> clazz){
-        Class[] classArray = Arrays.stream(clazz.getDeclaredFields()).filter(field -> {
+    <T> void judgeDependenceBean(Class<T> clazz, T instance) throws IllegalAccessException, InstantiationException {
+        Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CreateOnTheFly.class) != null).toArray(Field[]::new);
+        for(Field field : fields){
             field.setAccessible(true);
-            return field.getAnnotation(CreateOnTheFly.class) != null;
-        }).map(Field::getType).toArray(Class[]::new);
+            Class<?> aClass = field.getType();
 
-        if(classArray.length != 0){
-            isMapContainsKey(classArray);
-        }
-    }
-
-    private void isMapContainsKey(Class[] classArray) {
-        for(Class aClazz : classArray){
-            if(!map.containsKey(aClazz)){
+            if(!map.containsKey(aClass)){
                 throw new IllegalStateException();
             }
         }
     }
+
 
     private <T> void judgeBeanNotRegistered(Class<T> resolveClazz) {
         if (!map.containsKey(resolveClazz) && !map.containsValue(resolveClazz)) {

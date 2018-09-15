@@ -24,6 +24,7 @@ class DependencyTest {
 
         assertThrows(IllegalStateException.class, () -> context.getBean(MyBeanAnother.class));
     }
+
     @Test
     void should_can_work_when_dependence_has_been_registered() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
@@ -43,4 +44,15 @@ class DependencyTest {
         MyDependency bean = context.getBean(MyDependency.class);
         assertEquals("MyDependency string", bean.getString());
     }
+
+    @Test
+    void should_can_work_when_get_dependence_string() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBean.class);
+        context.registerBean(MyDependency.class);
+
+        MyBean bean = context.getBean(MyBean.class);
+        assertEquals("MyDependency string", bean.getDependency());
+    }
+
 }

@@ -3,13 +3,13 @@ import com.example.interfaceClass.MyBeanBase;
 import com.example.interfaceClass.MyBeanBaseClass;
 import com.example.interfaceClass.MyBeanImpl;
 import com.example.interfaceClass.MyBeanImplAnother;
+import com.example.otherClass.ClassConstructorThrowException;
 import com.example.otherClass.ClassNotHaveDefaultConstructor;
+import com.example.otherClass.ClassNotInstanctiated;
 import com.example.otherClass.MyBean;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SuperClassAndInterfaceTest {
     @Test
@@ -95,11 +95,38 @@ public class SuperClassAndInterfaceTest {
     }
 
     @Test
-    void should_throw_exception_when_beanClazz_or_resolveClass_not_have_default_constructor() {
+    void should_throw_exception_when_beanClazz_or_resolveClazz_not_have_default_constructor() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class, null), "ClassNotHaveDefaultConstructor has no default constructor");
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null, ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
         assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class, ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
+    }
+
+    @Test
+    void should_throw_exception_when_beanClazz_or_resolveClazz_can_not_instantiated() {
+        IoCContextImpl context = new IoCContextImpl();
+
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class, ClassNotInstanctiated.class), "ClassNotInstantiated is abstract");
+    }
+
+    @Test
+    void should_return_when_beanClazz_or_resolveClazz_is_registered() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBean.class, MyBean.class);
+        assertDoesNotThrow(() -> context.registerBean(MyBean.class, MyBean.class));
+    }
+
+    @Test
+    void should_continue_throw_exception_when_getBean_getConstructors_throw_exception() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(ClassConstructorThrowException.class, ClassConstructorThrowException.class);
+        assertThrows(CloneNotSupportedException.class, () -> context.getBean(ClassConstructorThrowException.class), "something happened");
+    }
+
+    @Test
+    void should_throw_exception_when_registerBean_after_getBean() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBean.class, MyBean.class);
+        context.getBean(MyBean.class);
+        assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class, MyBean.class), "not register bean after get bean");
     }
 }

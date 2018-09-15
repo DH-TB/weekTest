@@ -12,7 +12,6 @@ public class IoCContextImpl implements IoCContext {
             throw new IllegalArgumentException("beanClazz or resolveClazz is mandatory");
         }
 
-        judgeNoDefaultConstructor(resolveClazz);
         judgeNoDefaultConstructor(beanClazz);
 
         judgeNotInstantiated(beanClazz);
@@ -84,7 +83,7 @@ public class IoCContextImpl implements IoCContext {
         try {
             beanClazz.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("ClassNotInstanctiated is abstract");
+            throw new IllegalArgumentException("ClassNotInstantiated is abstract");
         } catch (Exception e) {
             if (e.getCause() != null) {
                 throw new Exception(e.getMessage(), e.getCause());

@@ -23,14 +23,14 @@ class IoCContextTest {
     @Test
     void should_throw_exception_when_beanClass_can_not_instantiated() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class), "ClassNotInstanctiated is abstract");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class), "ClassNotInstantiated is abstract");
     }
 
     @Test
     void should_return_when_beanClazz_is_registered() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBean.class);
-        assertDoesNotThrow(() -> context.registerBean(MyBean.class, MyBean.class));
+        assertDoesNotThrow(() -> context.registerBean(MyBean.class));
     }
 
     @Test

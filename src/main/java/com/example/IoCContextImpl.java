@@ -60,9 +60,8 @@ public class IoCContextImpl implements IoCContext {
 
         judgeBeanNotRegistered(resolveClazz);
 
-
-        System.out.println(2);
         getDependenceBean(resolveClazz);
+
         if(map.get(resolveClazz) != null){
             return (T) map.get(resolveClazz).newInstance();
         }
@@ -71,13 +70,13 @@ public class IoCContextImpl implements IoCContext {
         }
     }
     <T> void getDependenceBean(Class<T> clazz){
-        Class[] classes = Arrays.stream(clazz.getDeclaredFields()).filter(field -> {
+        Class<?> Clazz = Arrays.stream(clazz.getDeclaredFields()).filter(field -> {
             field.setAccessible(true);
             return field.getAnnotation(CreateOnTheFly.class) != null;
-        }).map(field -> field.getType()).toArray(Class[]::new);
+        }).map(Field::getType).findFirst().orElse(null);
 
-        if(classes.length != 0){
-            if(!map.containsKey(classes)){
+        if(Clazz != null){
+            if(!map.containsKey(Clazz)){
                 throw new IllegalStateException();
             }
         }

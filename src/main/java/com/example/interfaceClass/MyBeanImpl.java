@@ -4,6 +4,6 @@ public class MyBeanImpl extends MyBeanBaseClass implements MyBeanBase, MyBeanBas
 
     @Override
     public String getString() {
-        return "interface bean can work";
+        return "bean can work";
     }
 }

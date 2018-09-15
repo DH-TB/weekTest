@@ -57,11 +57,16 @@ public class IoCContextImpl implements IoCContext {
 
         judgeBeanNotRegistered(resolveClazz);
 
-        return (T) map.get(resolveClazz).newInstance();
+        if(map.get(resolveClazz) != null){
+            return (T) map.get(resolveClazz).newInstance();
+        }
+        else {
+            return resolveClazz.newInstance();
+        }
     }
 
     private <T> void judgeBeanNotRegistered(Class<T> resolveClazz) {
-        if (!map.containsKey(resolveClazz)) {
+        if (!map.containsKey(resolveClazz) && !map.containsValue(resolveClazz)) {
             throw new IllegalStateException("resolveClazz not registered");
         }
     }

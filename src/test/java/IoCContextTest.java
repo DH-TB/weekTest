@@ -103,7 +103,7 @@ class IoCContextTest {
 
         MyBeanBase bean = context.getBean(MyBeanBase.class);
 
-        assertEquals("interface bean can work", bean.getString());
+        assertEquals("bean can work", bean.getString());
     }
 
     @Test
@@ -147,5 +147,15 @@ class IoCContextTest {
         MyBeanBaseClass beanAnother = context.getBean(MyBeanBaseClass.class);
 
         assertNotSame(bean, beanAnother);
+    }
+
+    @Test
+    void should_sub_class_can_get_bean_when_register_interface() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanBase.class, MyBeanImpl.class);
+
+        MyBeanImpl bean = context.getBean(MyBeanImpl.class);
+
+        assertEquals("bean can work", bean.getString());
     }
 }

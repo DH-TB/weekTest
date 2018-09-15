@@ -24,4 +24,14 @@ class DependencyTest {
         MyBean bean = context.getBean(MyBean.class);
         assertEquals("my bean string dependence", bean.getString());
     }
+
+    @Test
+    void should_can_work_when_execute_dependence() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBean.class);
+        context.registerBean(MyDependency.class);
+
+        MyDependency bean = context.getBean(MyDependency.class);
+        assertEquals("MyDependency string", bean.getString());
+    }
 }

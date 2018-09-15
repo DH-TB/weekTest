@@ -1,5 +1,8 @@
 package com.example;
 
+import com.example.dependency.CreateOnTheFly;
+
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class IoCContextImpl implements IoCContext {
@@ -57,11 +60,26 @@ public class IoCContextImpl implements IoCContext {
 
         judgeBeanNotRegistered(resolveClazz);
 
+
+        System.out.println(2);
+        getDependenceBean(resolveClazz);
         if(map.get(resolveClazz) != null){
             return (T) map.get(resolveClazz).newInstance();
         }
         else {
             return resolveClazz.newInstance();
+        }
+    }
+    <T> void getDependenceBean(Class<T> clazz){
+        Class[] classes = Arrays.stream(clazz.getDeclaredFields()).filter(field -> {
+            field.setAccessible(true);
+            return field.getAnnotation(CreateOnTheFly.class) != null;
+        }).map(field -> field.getType()).toArray(Class[]::new);
+
+        if(classes.length != 0){
+            if(!map.containsKey(classes)){
+                throw new IllegalStateException();
+            }
         }
     }
 

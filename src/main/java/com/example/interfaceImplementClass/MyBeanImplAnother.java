@@ -1,4 +1,4 @@
-package com.example.interfaceClass;
+package com.example.interfaceImplementClass;
 
 public class MyBeanImplAnother implements MyBeanBase {
 

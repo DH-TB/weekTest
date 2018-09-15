@@ -1,8 +1,8 @@
 import com.example.IoCContextImpl;
-import com.example.interfaceClass.MyBeanBase;
-import com.example.interfaceClass.MyBeanBaseClass;
-import com.example.interfaceClass.MyBeanImpl;
-import com.example.interfaceClass.MyBeanImplAnother;
+import com.example.interfaceImplementClass.MyBeanBase;
+import com.example.interfaceImplementClass.MyBeanBaseClass;
+import com.example.interfaceImplementClass.MyBeanImpl;
+import com.example.interfaceImplementClass.MyBeanImplAnother;
 import com.example.otherClass.ClassConstructorThrowException;
 import com.example.otherClass.ClassNotHaveDefaultConstructor;
 import com.example.otherClass.ClassNotInstanctiated;

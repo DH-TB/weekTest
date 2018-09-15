@@ -11,26 +11,26 @@ class IoCContextTest {
     void should_throw_exception_when_beanClazz_is_null() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null, null), "beanClazz is mandatory");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean( null), "beanClazz is mandatory");
     }
 
     @Test
     void should_throw_exception_when_beanClazz_not_have_default_constructor() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class, null), "ClassNotHaveDefaultConstructor has no default constructor");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
     }
 
     @Test
     void should_throw_exception_when_beanClass_can_not_instantiated() {
         IoCContextImpl context = new IoCContextImpl();
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class, null), "ClassNotInstanctiated is abstract");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotInstanctiated.class), "ClassNotInstanctiated is abstract");
     }
 
     @Test
     void should_return_when_beanClazz_is_registered() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(MyBean.class, MyBean.class);
+        context.registerBean(MyBean.class);
         assertDoesNotThrow(() -> context.registerBean(MyBean.class, MyBean.class));
     }
 
@@ -49,22 +49,22 @@ class IoCContextTest {
     @Test
     void should_continue_throw_exception_when_getBean_getConstructors_throw_exception() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(ClassConstructorThrowException.class, ClassConstructorThrowException.class);
+        context.registerBean(ClassConstructorThrowException.class);
         assertThrows(CloneNotSupportedException.class, () -> context.getBean(ClassConstructorThrowException.class), "something happened");
     }
 
     @Test
     void should_throw_exception_when_registerBean_after_getBean() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(MyBean.class, MyBean.class);
+        context.registerBean(MyBean.class);
         context.getBean(MyBean.class);
-        assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class, MyBean.class), "not register bean after get bean");
+        assertThrows(IllegalStateException.class, () -> context.registerBean(MyBean.class), "not register bean after get bean");
     }
 
     @Test
     void should_can_work_when_register_good_bean() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(ClassCanWork.class, ClassCanWork.class);
+        context.registerBean(ClassCanWork.class);
 
         ClassCanWork bean = context.getBean(ClassCanWork.class);
         String actual = bean.getString();
@@ -75,7 +75,7 @@ class IoCContextTest {
     @Test
     void should_can_get_not_same_bean_when_register_one_bean() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(ClassCanWork.class, ClassCanWork.class);
+        context.registerBean(ClassCanWork.class);
 
         ClassCanWork bean = context.getBean(ClassCanWork.class);
         ClassCanWork anotherBean = context.getBean(ClassCanWork.class);
@@ -86,8 +86,8 @@ class IoCContextTest {
     @Test
     void should_can_work_when_register_arbitrarily_bean() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
-        context.registerBean(ClassCanWork.class, ClassCanWork.class);
-        context.registerBean(ClassCanWorkAnother.class, ClassCanWorkAnother.class);
+        context.registerBean(ClassCanWork.class);
+        context.registerBean(ClassCanWorkAnother.class);
 
         ClassCanWorkAnother bean = context.getBean(ClassCanWorkAnother.class);
 
@@ -103,17 +103,17 @@ class IoCContextTest {
 
         MyBeanBase bean = context.getBean(MyBeanBase.class);
 
-        assertEquals("implement class bean can work", bean.getString());
+        assertEquals("interface bean can work", bean.getString());
     }
 
     @Test
-    void should_can_work_when_register_superClass() throws Exception {
+    void should_can_work_when_register_super_class() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBeanBaseClass.class, MyBeanImpl.class);
 
         MyBeanBaseClass bean = context.getBean(MyBeanBaseClass.class);
 
-        assertEquals("getSuperClass", bean.getSuperClass());
+        assertEquals("super class can work", bean.getSuperClass());
     }
 
     @Test
@@ -124,7 +124,7 @@ class IoCContextTest {
 
         MyBeanBase bean = context.getBean(MyBeanBase.class);
 
-        assertEquals("another bean can work", bean.getString());
+        assertEquals("override another bean can work", bean.getString());
     }
 
     @Test
@@ -139,7 +139,7 @@ class IoCContextTest {
     }
 
     @Test
-    void should_can_get_not_same_bean_when_register_superClass() throws Exception {
+    void should_can_get_not_same_bean_when_register_super_class() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBeanBaseClass.class, MyBeanImpl.class);
 

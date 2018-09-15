@@ -1,12 +1,9 @@
 package com.example;
 
-import com.example.otherClass.MyBean;
-
 import java.util.*;
 
 public class IoCContextImpl implements IoCContext {
     private boolean isGetBean;
-    private final List<Class> classList = new ArrayList<>();
     private final Map<Class, Class> map = new HashMap<>();
 
     @Override
@@ -21,10 +18,6 @@ public class IoCContextImpl implements IoCContext {
 
         judgeIllegalGetBean();
 
-//        if (!classList.contains(beanClazz)) {
-//            classList.add(beanClazz);
-//        }
-
         if (map.containsKey(resolveClazz)) {
             Class aClass = map.get(resolveClazz);
             if (!aClass.equals(beanClazz)) {
@@ -32,6 +25,24 @@ public class IoCContextImpl implements IoCContext {
             }
         } else {
             map.put(resolveClazz, beanClazz);
+        }
+
+    }
+
+    @Override
+    public void registerBean(Class<?> beanClazz) throws Exception {
+        if (beanClazz == null) {
+            throw new IllegalArgumentException("beanClazz is mandatory");
+        }
+
+        judgeNoDefaultConstructor(beanClazz);
+
+        judgeNotInstantiated(beanClazz);
+
+        judgeIllegalGetBean();
+
+        if (!map.containsKey(beanClazz)) {
+            map.put(beanClazz, beanClazz);
         }
 
     }

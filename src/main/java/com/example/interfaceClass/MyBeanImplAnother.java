@@ -4,6 +4,6 @@ public class MyBeanImplAnother implements MyBeanBase {
 
     @Override
     public String getString() {
-        return "another bean can work";
+        return "override another bean can work";
     }
 }

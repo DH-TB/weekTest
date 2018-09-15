@@ -3,6 +3,7 @@ import com.example.interfaceClass.MyBeanBase;
 import com.example.interfaceClass.MyBeanBaseClass;
 import com.example.interfaceClass.MyBeanImpl;
 import com.example.interfaceClass.MyBeanImplAnother;
+import com.example.otherClass.ClassNotHaveDefaultConstructor;
 import com.example.otherClass.MyBean;
 import org.junit.jupiter.api.Test;
 
@@ -85,23 +86,20 @@ public class SuperClassAndInterfaceTest {
     }
 
     @Test
-    void should_throw_exception_when_beanClazz_is_null() {
+    void should_throw_exception_when_beanClazz_or_resolveClazz_is_null() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(MyBean.class,null), "beanClazz or resolveClazz is mandatory");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(MyBean.class, null), "beanClazz or resolveClazz is mandatory");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null, MyBean.class), "beanClazz or resolveClazz is mandatory");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null, null), "beanClazz or resolveClazz is mandatory");
     }
 
     @Test
-    void should_throw_exception_when_resolveClazz_is_null() {
+    void should_throw_exception_when_beanClazz_or_resolveClass_not_have_default_constructor() {
         IoCContextImpl context = new IoCContextImpl();
 
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null,MyBean.class), "beanClazz or resolveClazz is mandatory");
-    }
-    
-    @Test
-    void should_throw_exception_when_both_of_null() {
-        IoCContextImpl context = new IoCContextImpl();
-
-        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null,null), "beanClazz or resolveClazz is mandatory");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class, null), "ClassNotHaveDefaultConstructor has no default constructor");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(null, ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
+        assertThrows(IllegalArgumentException.class, () -> context.registerBean(ClassNotHaveDefaultConstructor.class, ClassNotHaveDefaultConstructor.class), "ClassNotHaveDefaultConstructor has no default constructor");
     }
 }

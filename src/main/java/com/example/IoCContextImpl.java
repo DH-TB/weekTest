@@ -12,6 +12,7 @@ public class IoCContextImpl implements IoCContext {
             throw new IllegalArgumentException("beanClazz or resolveClazz is mandatory");
         }
 
+        judgeNoDefaultConstructor(resolveClazz);
         judgeNoDefaultConstructor(beanClazz);
 
         judgeNotInstantiated(beanClazz);

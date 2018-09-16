@@ -1,7 +1,6 @@
 package com.example;
 
 import com.example.dependency.CreateOnTheFly;
-import com.example.dependency.MyDependency;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -60,6 +59,7 @@ public class IoCContextImpl implements IoCContext {
         }
 
         judgeBeanNotRegistered(resolveClazz);
+
         T instance;
         if(map.get(resolveClazz) != null){
             instance = (T) map.get(resolveClazz).newInstance();
@@ -68,11 +68,21 @@ public class IoCContextImpl implements IoCContext {
             instance = resolveClazz.newInstance();
         }
 
-        judgeDependenceBean(resolveClazz, instance);
+        judgeDependenceBean(resolveClazz);
+
+        List<Class> superClassList = new ArrayList<>();
+        getSuperClassList(resolveClazz, superClassList);
+
+        for(Object aClazz : superClassList){
+            if(!map.containsKey(aClazz)){
+                throw new IllegalStateException();
+            }
+        }
+
 
         return instance;
     }
-    <T> void judgeDependenceBean(Class<T> clazz, T instance) throws IllegalAccessException, InstantiationException {
+    private <T> void judgeDependenceBean(Class<T> clazz) {
         Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CreateOnTheFly.class) != null).toArray(Field[]::new);
         for(Field field : fields){
             field.setAccessible(true);
@@ -82,6 +92,17 @@ public class IoCContextImpl implements IoCContext {
                 throw new IllegalStateException();
             }
         }
+    }
+
+    private <T> void getSuperClassList(Class<T> clazz, List superClassList) {
+
+        Class<? super T> superclass = clazz.getSuperclass();
+
+        if(superclass != Object.class){
+            superClassList.add(superclass);
+            getSuperClassList(superclass, superClassList);
+        }
+
     }
 
 

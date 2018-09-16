@@ -1,6 +1,6 @@
 package com.example;
 
-public interface IoCContext {
+public interface IoCContext extends AutoCloseable{
 
     void registerBean(Class<?> beanClazz) throws Exception;
 

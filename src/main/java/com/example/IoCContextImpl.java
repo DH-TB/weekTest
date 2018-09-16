@@ -3,6 +3,8 @@ package com.example;
 import com.example.dependency.CreateOnTheFly;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class IoCContextImpl implements IoCContext {
@@ -61,10 +63,9 @@ public class IoCContextImpl implements IoCContext {
         judgeBeanNotRegistered(resolveClazz);
 
         T instance;
-        if(map.get(resolveClazz) != null){
+        if (map.get(resolveClazz) != null) {
             instance = (T) map.get(resolveClazz).newInstance();
-        }
-        else {
+        } else {
             instance = resolveClazz.newInstance();
         }
 
@@ -72,33 +73,36 @@ public class IoCContextImpl implements IoCContext {
 
         List<Class> superClassList = new ArrayList<>();
         getSuperClassList(resolveClazz, superClassList);
-
-        for(Object aClazz : superClassList){
-            if(!map.containsKey(aClazz)){
-                throw new IllegalStateException();
-            }
-        }
+        judgeSuperClassList(superClassList);
 
 
         return instance;
     }
+
+    private void judgeSuperClassList(List<Class> superClassList) {
+        for (Object aClazz : superClassList) {
+            if (!map.containsKey(aClazz)) {
+                throw new IllegalStateException();
+            }
+        }
+    }
+
     private <T> void judgeDependenceBean(Class<T> clazz) {
         Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CreateOnTheFly.class) != null).toArray(Field[]::new);
-        for(Field field : fields){
+        for (Field field : fields) {
             field.setAccessible(true);
             Class<?> aClass = field.getType();
 
-            if(!map.containsKey(aClass)){
+            if (!map.containsKey(aClass)) {
                 throw new IllegalStateException();
             }
         }
     }
 
     private <T> void getSuperClassList(Class<T> clazz, List superClassList) {
-
         Class<? super T> superclass = clazz.getSuperclass();
 
-        if(superclass != Object.class){
+        if (superclass != Object.class) {
             superClassList.add(superclass);
             getSuperClassList(superclass, superClassList);
         }
@@ -137,5 +141,21 @@ public class IoCContextImpl implements IoCContext {
         if (count == 0) {
             throw new IllegalArgumentException("ClassNotHaveDefaultConstructor has no default constructor");
         }
+    }
+
+    @Override
+    public void close() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        for (Map.Entry<Class, Class> map : map.entrySet()) {
+
+            Class beanClass = map.getKey();
+            Object instance = beanClass.newInstance();
+
+            Method method = beanClass.getDeclaredMethod("close");
+
+            method.invoke(instance);
+
+
+        }
+
     }
 }

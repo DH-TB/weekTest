@@ -13,17 +13,17 @@ class DependencyTest {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBeanAnother.class);
 
-        assertThrows(IllegalStateException.class, () -> context.getBean(MyBeanAnother.class));
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyBeanAnother.class), "has dependency bean not be registered");
     }
 
-        @Test
-        void should_throw_exception_when_multiply_dependence_not_be_registered() throws Exception {
-            IoCContextImpl context = new IoCContextImpl();
-            context.registerBean(MyBeanAnother.class);
-            context.registerBean(MyDependency.class);
+    @Test
+    void should_throw_exception_when_multiply_dependence_not_be_registered() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyBeanAnother.class);
+        context.registerBean(MyDependency.class);
 
-            assertThrows(IllegalStateException.class, () -> context.getBean(MyBeanAnother.class));
-        }
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyBeanAnother.class), "has dependency bean not be registered");
+    }
 
     @Test
     void should_can_work_when_dependence_has_been_registered() throws Exception {

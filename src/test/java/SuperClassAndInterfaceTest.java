@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SuperClassAndInterfaceTest {
+class SuperClassAndInterfaceTest {
     @Test
     void should_can_work_when_register_interface() throws Exception {
         IoCContextImpl context = new IoCContextImpl();

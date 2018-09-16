@@ -16,7 +16,7 @@ class InheritanceTest {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyClass.class);
 
-        assertThrows(IllegalStateException.class, () -> context.getBean(MyClass.class));
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyClass.class), "has super class not be registered");
     }
 
     @Test
@@ -25,7 +25,7 @@ class InheritanceTest {
         context.registerBean(MyClass.class);
         context.registerBean(MyInheritance.class);
 
-        assertThrows(IllegalStateException.class, () -> context.getBean(MyClass.class));
+        assertThrows(IllegalStateException.class, () -> context.getBean(MyClass.class), "has super class not be registered");
     }
 
     @Test
@@ -35,7 +35,7 @@ class InheritanceTest {
         context.registerBean(MyInheritance.class);
         context.registerBean(MyInheritSuperClass.class);
 
-        assertDoesNotThrow(() -> context.getBean(MyClass.class));
+        assertDoesNotThrow(() -> context.getBean(MyClass.class), "has super class not be registered");
     }
 
     @Test

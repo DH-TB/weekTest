@@ -85,9 +85,8 @@ public class IoCContextImpl implements IoCContext {
 
     private void judgeSuperClassList(List<Class> superClassList) {
         for (Object aClazz : superClassList) {
-            System.out.println(aClazz);
             if (!map.containsKey(aClazz) && !map.containsValue(aClazz)) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("has super class not be registered");
             }
         }
     }
@@ -117,7 +116,7 @@ public class IoCContextImpl implements IoCContext {
             Class<?> aClass = field.getType();
 
             if (!map.containsKey(aClass)) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("has dependency bean not be registered");
             }
             field.set(instance, aClass.newInstance());
         }

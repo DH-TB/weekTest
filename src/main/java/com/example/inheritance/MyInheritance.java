@@ -6,4 +6,8 @@ public class MyInheritance extends MyInheritSuperClass{
 
     @CreateOnTheFly
     private MyClass myClass;
+
+    public String getString(){
+        return super.getString();
+    }
 }

@@ -3,14 +3,14 @@ package com.example;
 import com.example.dependency.CreateOnTheFly;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IoCContextImpl implements IoCContext {
     private boolean isGetBean;
     private final Map<Class, Class> map = new HashMap<>();
-    private LinkedList<Exception> exceptions = new LinkedList<>();
+    private Stack<Exception> exceptionStack = new Stack<>();
+    private Stack<AutoCloseable> closeStack = new Stack<>();
     public static List<String> countCloseList = new LinkedList<>();
 
     @Override
@@ -20,11 +20,13 @@ public class IoCContextImpl implements IoCContext {
         }
 
         judgeNoDefaultConstructor(beanClazz);
-
         judgeNotInstantiated(beanClazz);
-
         judgeIllegalGetBean();
 
+        saveBeanMap(resolveClazz, beanClazz);
+    }
+
+    private <T> void saveBeanMap(Class<? super T> resolveClazz, Class<T> beanClazz) {
         if (map.containsKey(resolveClazz)) {
             Class aClass = map.get(resolveClazz);
             if (!aClass.equals(beanClazz)) {
@@ -33,7 +35,6 @@ public class IoCContextImpl implements IoCContext {
         } else {
             map.put(resolveClazz, beanClazz);
         }
-
     }
 
     @Override
@@ -43,15 +44,20 @@ public class IoCContextImpl implements IoCContext {
         }
 
         judgeNoDefaultConstructor(beanClazz);
-
         judgeNotInstantiated(beanClazz);
-
         judgeIllegalGetBean();
 
         if (!map.containsKey(beanClazz)) {
             map.put(beanClazz, beanClazz);
         }
 
+        Class<?>[] interfaces = beanClazz.getInterfaces();
+
+        for (Class myInterface : interfaces) {
+            if (AutoCloseable.class.equals(myInterface)) {
+                closeStack.add((AutoCloseable) beanClazz.newInstance());
+            }
+        }
     }
 
     @Override
@@ -63,34 +69,49 @@ public class IoCContextImpl implements IoCContext {
         }
 
         judgeBeanNotRegistered(resolveClazz);
+        getSuperClass(resolveClazz);
 
-        T instance;
-        if (map.get(resolveClazz) != null) {
-            instance = (T) map.get(resolveClazz).newInstance();
-        } else {
-            instance = resolveClazz.newInstance();
-        }
-
-        judgeDependenceBean(resolveClazz);
-
-        List<Class> superClassList = new ArrayList<>();
-        getSuperClassList(resolveClazz, superClassList);
-        judgeSuperClassList(superClassList);
-
+        T instance = getInstance(resolveClazz);
 
         return instance;
     }
 
+
+    private <T> void getSuperClass(Class<T> resolveClazz) {
+        List<Class> superClassList = new ArrayList<>();
+        getSuperClassList(resolveClazz, superClassList);
+        judgeSuperClassList(superClassList);
+    }
+
     private void judgeSuperClassList(List<Class> superClassList) {
         for (Object aClazz : superClassList) {
-            if (!map.containsKey(aClazz)) {
+            System.out.println(aClazz);
+            if (!map.containsKey(aClazz) && !map.containsValue(aClazz)) {
                 throw new IllegalStateException();
             }
         }
     }
 
-    private <T> void judgeDependenceBean(Class<T> clazz) {
-        Field[] fields = Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CreateOnTheFly.class) != null).toArray(Field[]::new);
+    private <T> T getInstance(Class<T> clazz) throws IllegalAccessException, InstantiationException {
+        T instance;
+        if (map.get(clazz) != null) {
+            instance = (T) map.get(clazz).newInstance();
+        } else {
+            instance = clazz.newInstance();
+        }
+        judgeDependence(clazz, instance);
+
+        return instance;
+    }
+
+    private <T> void judgeDependence(Class<T> clazz, T instance) throws IllegalAccessException, InstantiationException {
+        Class<? super T> superclass = clazz.getSuperclass();
+        Stream<Field> superStream;
+        superStream = superclass != null ? Arrays.stream(clazz.getSuperclass().getDeclaredFields()) : Stream.empty();
+
+        Stream<Field> stream = Arrays.stream(clazz.getDeclaredFields());
+        Field[] fields = Stream.concat(superStream, stream).filter(field -> field.getAnnotation(CreateOnTheFly.class) != null).toArray(Field[]::new);
+
         for (Field field : fields) {
             field.setAccessible(true);
             Class<?> aClass = field.getType();
@@ -98,17 +119,16 @@ public class IoCContextImpl implements IoCContext {
             if (!map.containsKey(aClass)) {
                 throw new IllegalStateException();
             }
+            field.set(instance, aClass.newInstance());
         }
     }
 
     private <T> void getSuperClassList(Class<T> clazz, List superClassList) {
         Class<? super T> superclass = clazz.getSuperclass();
-
-        if (superclass != Object.class) {
+        if (superclass != null && superclass != Object.class) {
             superClassList.add(superclass);
             getSuperClassList(superclass, superClassList);
         }
-
     }
 
 
@@ -118,13 +138,11 @@ public class IoCContextImpl implements IoCContext {
         }
     }
 
-
     private void judgeIllegalGetBean() {
         if (isGetBean) {
             throw new IllegalStateException("not register bean after get bean");
         }
     }
-
 
     private <T> void judgeNotInstantiated(Class<T> beanClazz) throws Exception {
         try {
@@ -147,23 +165,18 @@ public class IoCContextImpl implements IoCContext {
 
     @Override
     public void close() throws Exception {
-        List<Class> classLinkedList = new ArrayList<>(map.keySet());
-        for (Class beanClass : classLinkedList) {
-            System.out.println(beanClass);
-
-            Object instance = beanClass.newInstance();
-            Method method = beanClass.getDeclaredMethod("close");
+        while (!closeStack.empty()) {
+            AutoCloseable closeable = closeStack.pop();
             try {
-                method.invoke(instance);
+                closeable.close();
             } catch (Exception e) {
-                exceptions.add(e);
+                exceptionStack.push(e);
             }
         }
 
-        if (exceptions.size() != 0) {
-            Exception exception = exceptions.get(0);
-            System.out.println(exception.getCause());
-            throw exception;
+        if (!exceptionStack.empty()) {
+            throw exceptionStack.pop();
         }
     }
+
 }

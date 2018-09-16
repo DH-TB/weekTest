@@ -6,4 +6,8 @@ public class MyInheritSuperClass {
 
     @CreateOnTheFly
     private MyClass myClass;
+
+    public String getString(){
+        return "inherit class string";
+    }
 }

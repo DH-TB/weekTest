@@ -3,7 +3,7 @@ package com.example.dependency;
 public class MyBean {
 
     @CreateOnTheFly
-    private MyDependency dependency = new MyDependency();
+    private MyDependency dependency;
 
     public String getString(){
         return "my bean string dependence";

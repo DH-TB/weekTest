@@ -54,5 +54,4 @@ class DependencyTest {
         MyBean bean = context.getBean(MyBean.class);
         assertEquals("MyDependency string", bean.getDependency());
     }
-
 }

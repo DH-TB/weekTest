@@ -1,12 +1,13 @@
 import com.example.IoCContextImpl;
-import com.example.dependency.MyBeanAnother;
-import com.example.dependency.MyDependency;
 import com.example.inheritance.MyClass;
 import com.example.inheritance.MyInheritSuperClass;
 import com.example.inheritance.MyInheritance;
 import org.junit.jupiter.api.Test;
 
+import java.lang.annotation.Target;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InheritanceTest {
@@ -37,4 +38,14 @@ class InheritanceTest {
         assertDoesNotThrow(() -> context.getBean(MyClass.class));
     }
 
+    @Test
+    void should_can_work_when_inheritance() throws Exception {
+        IoCContextImpl context = new IoCContextImpl();
+        context.registerBean(MyClass.class);
+        context.registerBean(MyInheritance.class);
+        context.registerBean(MyInheritSuperClass.class);
+
+        MyClass bean = context.getBean(MyClass.class);
+        assertEquals("inherit class string", bean.getString());
+    }
 }

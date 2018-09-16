@@ -69,6 +69,7 @@ public class SuperClassAndInterfaceTest {
     void should_sub_class_can_get_bean_when_register_interface() throws Exception {
         IoCContextImpl context = new IoCContextImpl();
         context.registerBean(MyBeanBase.class, MyBeanImpl.class);
+        context.registerBean(MyBeanBaseClass.class);
 
         MyBeanImpl bean = context.getBean(MyBeanImpl.class);
 

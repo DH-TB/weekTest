@@ -3,7 +3,6 @@ package com.example;
 import com.example.dependency.CreateOnTheFly;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,6 +10,8 @@ import java.util.stream.Collectors;
 public class IoCContextImpl implements IoCContext {
     private boolean isGetBean;
     private final Map<Class, Class> map = new HashMap<>();
+    private LinkedList<Exception> exceptions = new LinkedList<>();
+    public static List<String> countCloseList = new LinkedList<>();
 
     @Override
     public <T> void registerBean(Class<? super T> resolveClazz, Class<T> beanClazz) throws Exception {
@@ -145,15 +146,24 @@ public class IoCContextImpl implements IoCContext {
     }
 
     @Override
-    public void close() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
-        Iterator<Class> classIterator = new LinkedList<>(map.keySet()).descendingIterator();
-
-        for (Iterator<Class> it = classIterator; it.hasNext(); ) {
-            Class beanClass = it.next();
+    public void close() throws Exception {
+        List<Class> classLinkedList = new ArrayList<>(map.keySet());
+        for (Class beanClass : classLinkedList) {
+            System.out.println(beanClass);
 
             Object instance = beanClass.newInstance();
             Method method = beanClass.getDeclaredMethod("close");
-            method.invoke(instance);
+            try {
+                method.invoke(instance);
+            } catch (Exception e) {
+                exceptions.add(e);
+            }
+        }
+
+        if (exceptions.size() != 0) {
+            Exception exception = exceptions.get(0);
+            System.out.println(exception.getCause());
+            throw exception;
         }
     }
 }

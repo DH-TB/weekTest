@@ -1,14 +1,12 @@
 package com.example.autoCloseable;
 
-public class MyBean implements AutoCloseable {
-    private boolean isClosed;
+import com.example.IoCContextImpl;
 
+public class MyBean implements AutoCloseable {
     @Override
     public void close() {
-        this.isClosed = true;
-    }
+        System.out.println(2);
 
-    public boolean isClosed() {
-        return isClosed;
+        IoCContextImpl.countCloseList.add("MyBean");
     }
 }

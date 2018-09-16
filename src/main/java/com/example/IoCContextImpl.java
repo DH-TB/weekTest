@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class IoCContextImpl implements IoCContext {
     private boolean isGetBean;
@@ -145,17 +146,14 @@ public class IoCContextImpl implements IoCContext {
 
     @Override
     public void close() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
-        for (Map.Entry<Class, Class> map : map.entrySet()) {
+        Iterator<Class> classIterator = new LinkedList<>(map.keySet()).descendingIterator();
 
-            Class beanClass = map.getKey();
+        for (Iterator<Class> it = classIterator; it.hasNext(); ) {
+            Class beanClass = it.next();
+
             Object instance = beanClass.newInstance();
-
             Method method = beanClass.getDeclaredMethod("close");
-
             method.invoke(instance);
-
-
         }
-
     }
 }
